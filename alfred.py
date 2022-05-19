@@ -13,7 +13,7 @@ The command line should be
 
 python yourscript.py "{query}" arg2 arg3 ...
 """
-UNESCAPE_CHARACTERS = u""" ;()"""
+UNESCAPE_CHARACTERS = """ ;()"""
 
 _MAX_RESULTS_DEFAULT = 9
 
@@ -22,13 +22,13 @@ bundleid = preferences['bundleid']
 
 class Item(object):
     @classmethod
-    def unicode(cls, value):
+    def str(cls, value):
         try:
-            items = iter(value.items())
+            items = iter(list(value.items()))
         except AttributeError:
-            return unicode(value)
+            return str(value)
         else:
-            return dict(map(unicode, item) for item in items)
+            return dict(list(map(str, item)) for item in items)
 
     def __init__(self, attributes, title, subtitle, icon=None):
         self.attributes = attributes
@@ -40,8 +40,8 @@ class Item(object):
         return tostring(self.xml()).decode('utf-8')
 
     def xml(self):
-        item = Element(u'item', self.unicode(self.attributes))
-        for attribute in (u'title', u'subtitle', u'icon'):
+        item = Element('item', self.str(self.attributes))
+        for attribute in ('title', 'subtitle', 'icon'):
             value = getattr(self, attribute)
             if value is None:
                 continue
@@ -49,7 +49,7 @@ class Item(object):
                 (value, attributes) = value
             else:
                 attributes = {}
-            SubElement(item, attribute, self.unicode(attributes)).text = self.unicode(value)
+            SubElement(item, attribute, self.str(attributes)).text = self.str(value)
         return item
 
 def args(characters=None):
@@ -65,7 +65,7 @@ def env(key):
     return os.environ['alfred_%s' % key]
 
 def uid(uid):
-    return u'-'.join(map(str, (bundleid, uid)))
+    return '-'.join(map(str, (bundleid, uid)))
 
 def unescape(query, characters=None):
     for character in (UNESCAPE_CHARACTERS if (characters is None) else characters):
