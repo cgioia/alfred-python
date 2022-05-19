@@ -38,7 +38,7 @@ class Item(object):
         self.icon = icon
 
     def __str__(self):
-        return tostring(self.xml()).decode('utf-8')
+        return tostring(self.xml(), encoding='unicode')
 
     def xml(self):
         item = Element('item', self.str(self.attributes))
@@ -60,7 +60,7 @@ def config():
     return _create('config')
 
 def decode(s):
-    return unicodedata.normalize('NFD', s.decode('utf-8'))
+    return unicodedata.normalize('NFD', s)
 
 def env(key):
     return os.environ['alfred_%s' % key]
@@ -87,7 +87,7 @@ def xml(items, maxresults=_MAX_RESULTS_DEFAULT):
     root = Element('items')
     for item in itertools.islice(items, maxresults):
         root.append(item.xml())
-    return tostring(root, encoding='utf-8')
+    return tostring(root, encoding='unicode')
 
 def _create(path):
     if not os.path.isdir(path):
